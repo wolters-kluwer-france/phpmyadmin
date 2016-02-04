@@ -1463,7 +1463,7 @@ function PMA_getHtmlForAuthPluginsDropdown(
             . __('Native MySQL Authentication') . '</option>'
             . '</select>';
     }
-
+    return '';
     return $html_output;
 }
 /**
@@ -1760,9 +1760,9 @@ function PMA_getHtmlForLoginInformationFields(
         . 'pma_pw.required = true;" '
         . (isset($GLOBALS['username']) ? '' : 'required="required"')
         . '/>' . "\n"
-        . '</div>' . "\n"
-        . '<div class="item" id="authentication_plugin_div">'
-        . '<label for="select_authentication_plugin" >';
+        . '</div>' . "\n";
+//        . '<div class="item" id="authentication_plugin_div">';
+//        . '<label for="select_authentication_plugin" >';
 
     $serverType = PMA_Util::getServerType();
     $auth_plugin_dropdown = '';
@@ -1771,7 +1771,7 @@ function PMA_getHtmlForLoginInformationFields(
         $username,
         $hostname
     );
-
+/*
     if (($serverType == 'MySQL'
         && PMA_MYSQL_INT_VERSION >= 50507)
         || ($serverType == 'MariaDB'
@@ -1790,6 +1790,7 @@ function PMA_getHtmlForLoginInformationFields(
             $username, $hostname, $orig_auth_plugin, $mode, 'old'
         );
     }
+
     $html_output .= $auth_plugin_dropdown;
 
     $html_output .= '<div '
@@ -1806,9 +1807,10 @@ function PMA_getHtmlForLoginInformationFields(
             ->getDisplay()
         . '</div>';
 
-    $html_output .= '</div>' . "\n"
+    $html_output .= '</div>' . "\n";
+*/
         // Generate password added here via jQuery
-       . '</fieldset>' . "\n";
+    $html_output .= '</fieldset>' . "\n";
 
     return $html_output;
 } // end of the 'PMA_getHtmlForLoginInformationFields()' function
@@ -5149,14 +5151,16 @@ function PMA_getSqlQueriesForDisplayAndAddUser($username, $hostname, $password)
         );
 
         // MariaDB uses 'USING' whereas MySQL uses 'AS'
-        if ($serverType == 'MariaDB') {
-            $create_user_stmt .= ' USING \'%s\'';
-        } else {
-            $create_user_stmt .= ' AS \'%s\'';
-        }
+//        if ($serverType == 'MariaDB') {
+//            $create_user_stmt .= ' USING \'%s\'';
+//        } else {
+//            $create_user_stmt .= ' AS \'%s\'';
+//        }
+
+        $create_user_stmt .= ' IDENTIFIED BY \'%s\'';
 
         $create_user_real = $create_user_show = $create_user_stmt;
-
+/*
         if ($_POST['pred_password'] == 'keep') {
             $create_user_real = sprintf(
                 $create_user_stmt,
@@ -5186,6 +5190,17 @@ function PMA_getSqlQueriesForDisplayAndAddUser($username, $hostname, $password)
                 '***'
             );
         }
+*/
+           $create_user_real = sprintf(
+                $create_user_stmt,
+                PMA_Util::sqlAddSlashes($_POST['pma_pw'])
+            );
+            $create_user_show = sprintf(
+                $create_user_stmt,
+                '***'
+            );
+
+
     } else {
         // Use 'SET PASSWORD' syntax for pre-5.7.6 MySQL versions
         // and pre-5.2.0 MariaDB versions
